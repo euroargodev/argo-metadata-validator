@@ -1,0 +1,61 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+
+[tool.poetry]
+version = "0.0.0" 
+name = "argo-metadata-validator"
+description = "Validator for ARGO sensor metadata JSON"
+authors = ["Matt McCormack <matcor@noc.ac.uk>"]
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+poetry-dynamic-versioning = "^1.1.0"
+importlib-metadata = "7.2.1"
+
+
+# Define the dependencies for building.
+[tool.poetry.group.build]
+optional = true
+
+[tool.poetry.group.build.dependencies]
+twine = "^4.0.2"
+importlib-metadata = "7.2.1"
+
+
+# Define the dependencies for Linting.
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+ruff = "^0.4.2"
+
+
+# Define the dependencies for Testing.
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.3.0"
+pytest-cov = "^4.0.0"
+coverage = {extras = ["xml"], version = "^7.2.5"}
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.2.0"
+
+[tool.coverage.paths]
+source = [ "Argo Metadata Validator", "**/Argo Metadata Validator",]
+
+[tool.setuptools.packages.find]
+namespaces = false
+
+
+
