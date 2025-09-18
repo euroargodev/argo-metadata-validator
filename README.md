@@ -3,82 +3,19 @@ argo-metadata-validator
 
 Validator for ARGO sensor metadata JSON
 
-**Overview**
-
-PROVIDE AN OVERVIEW OF THE PROJECT HERE
---------
-
-
-
-**Documentation**
-
-PROVIDE A LINK TO THE DOCUMENTATION HERE
--------------
-
+TODO: running/install instructions
 
 **Development**
 
-PROVIDE A LINK TO ANY DEVELOPMENT INFORMATION HERE
------------
+[Poetry](https://python-poetry.org/) is used to manage the building of this package (.whl & .tar.gz files), and Poetry can be used to install the package
+dependencies for you.
 
+To run lint/tests, first install dev dependencies ``poetry install -with dev``
 
-**Running Locally**
+- ``poetry run task lint`` - Check linting
+- ``poetry run task format`` - Autofix lint errors (where possible)
+- ``poetry run task test`` - Run unit tests
 
-PROVIDE AN EXPLANATION ON RUNNING THE PROJECT LOCALLY HERE
------------
-
-
-**Package Installation**
-
-Poetry is used to manage the building of this package (.whl & .tar.gz files), and Poetry can be used to install the package
-dependencies for you. The dependencies are in the pyproject.toml file, to install them run:
-
-- ``poetry install``
-
-To update your installed dependencies, run:
-- ``poetry update``
-
-To install a new dependency and add it to the projects pyproject.toml file, run:
-- ``poetry add package_name``
-
-To view your projects dependencies, run:
-- ``poetry show``
-
-To view the specific dependencies for a particular package, run:
-- ``poetry show package_name``
-
-**Virtual Environments**
-
-This project uses ``tox`` to manage virtual environments. This allows us to have the same environment configuration
-for all users, as well as in our GitLab CI/CD pipelines.
-
-
-To run a ``tox`` environment (for example the linting checks), you can use::
-
-    (argo-metadata-validator-tox) $ tox -e lint
-
-The ``(argo-metadata-validator-tox) $`` indicates that we're running with the conda environment activated.
-
-The available tox environments and their uses are:
-
-py310
-    Run the tests from the ``tests`` directory.
-``lint``
-    Run the static analysis of the code to check for possible errors and style requirements.
-``build``
-    Build the Python package to check that it will be able to be uploaded.
-``docs``
-    Build the documentation from the ``docs/source`` directory and output the HTML to ``docs/build``.
-``format``
-    Format the Python code using ``black``.
-
-Troubleshooting
-+++++++++++++++
-
-If you have made changes to the repository that don't seem to be updating in the tox environments,
-you can recreate an environment using the ``-r`` option. For example::
-
-    (argo-metadata-validator-tox) $ tox -r -e 310
 
 Releasing a new version
 -----------------------

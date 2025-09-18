@@ -25,3 +25,5 @@ junit.xml
 
 # Environments
 venv/
+
+test_json/

@@ -1,1 +1,0 @@
-"""Init file is needed for tests."""

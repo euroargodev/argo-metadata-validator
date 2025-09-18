@@ -17,12 +17,18 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 poetry-dynamic-versioning = "^1.1.0"
 importlib-metadata = "7.2.1"
 
 
 # Define the dependencies for building.
+click = "^8.2.1"
+referencing = "^0.36.2"
+jsonschema = "^4.25.1"
+requests = "^2.32.5"
+requests-mock = "^1.12.1"
+
 [tool.poetry.group.build]
 optional = true
 
@@ -30,32 +36,37 @@ optional = true
 twine = "^4.0.2"
 importlib-metadata = "7.2.1"
 
-
-# Define the dependencies for Linting.
-[tool.poetry.group.lint]
-optional = true
-
-[tool.poetry.group.lint.dependencies]
-ruff = "^0.4.2"
-
-
-# Define the dependencies for Testing.
-[tool.poetry.group.test]
-optional = true
-
-[tool.poetry.group.test.dependencies]
-pytest = "^7.3.0"
-pytest-cov = "^4.0.0"
-coverage = {extras = ["xml"], version = "^7.2.5"}
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^4.2.0"
-
 [tool.coverage.paths]
 source = [ "Argo Metadata Validator", "**/Argo Metadata Validator",]
 
 [tool.setuptools.packages.find]
 namespaces = false
 
+# Define the dev dependencies.
+[tool.poetry.group.dev]
+optional = true
 
-
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.2"
+pyright = "^1.1"
+pytest = "^7.3.0"
+pytest-cov = "^4.0.0"
+coverage = {extras = ["xml"], version = "^7.2.5"}
+twine = "^4.0.2"
+taskipy = "^1.14.1"
+pytest-mock = "^3.15.1"
+ 
+ 
+[tool.taskipy.tasks]
+lint = """
+    ruff format --diff argo_metadata_validator tests && \
+    ruff check argo_metadata_validator tests
+"""
+format = """
+    ruff format argo_metadata_validator tests && \
+    ruff check --fix argo_metadata_validator tests
+"""
+test = """
+    coverage run -m --source argo_metadata_validator --data-file=.coverage --omit tests/* pytest && \
+    coverage report -m --data-file=.coverage --skip-covered
+"""
