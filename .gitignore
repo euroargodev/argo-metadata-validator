@@ -25,5 +25,9 @@ junit.xml
 
 # Environments
 venv/
+.venv/
+
+.ruff_cache/
+.pytest_cache/
 
 test_json/
