@@ -14,6 +14,7 @@ from argo_metadata_validator.vocab_utils import expand_vocab, get_all_terms_from
 def _parse_json_error(error: JsonValidationError) -> ValidationError:
     return ValidationError(message=error.message, path=".".join([str(x) for x in error.path]))
 
+
 class ArgoValidator:
     """Validator class for ARGO metadata."""
 
