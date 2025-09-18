@@ -66,4 +66,6 @@ format = """
     ruff format argo_metadata_validator tests && \
     ruff check --fix argo_metadata_validator tests
 """
-test = "pytest"
+test = """
+    coverage run pytest
+"""
