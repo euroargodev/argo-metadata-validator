@@ -1,4 +1,5 @@
 """Tests for the vocab utils."""
+
 import pytest
 import requests_mock
 
@@ -16,7 +17,7 @@ from argo_metadata_validator.vocab_utils import (
     [
         ["SDN:R03::test", "http://vocab.nerc.ac.uk/collection/R03/current/test/"],
         ["SDN:R99::test", "SDN:R99::test"],
-    ]
+    ],
 )
 def test_expand_vocab(input_val, expected_result):
     """Test expand_vocab with different inputs."""
@@ -33,7 +34,7 @@ def test_expand_vocab(input_val, expected_result):
 
 def test_get_all_terms_from_argo_vocabs(mocker):
     """Test for get_all_terms_from_argo_vocabs calling mocked version of sub-method."""
-    mock_get = mocker.patch("argo_metadata_validator.vocab_utils.get_all_terms_from_vocab", return_value = ["1"])
+    mock_get = mocker.patch("argo_metadata_validator.vocab_utils.get_all_terms_from_vocab", return_value=["1"])
 
     result = get_all_terms_from_argo_vocabs()
 

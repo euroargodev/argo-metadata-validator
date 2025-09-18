@@ -1,4 +1,5 @@
 """Tests for the schema utils."""
+
 from pathlib import Path
 
 import pytest
@@ -28,7 +29,6 @@ def test_get_schema_dir(mocker):
     r = _get_schema_dir("9.9.9")
 
     assert r.as_posix() == "schema/9.9.9"
-
 
 
 def test_get_schema_file(mocker):

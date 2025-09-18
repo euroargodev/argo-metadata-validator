@@ -1,4 +1,5 @@
 """Tests for utils."""
+
 from argo_metadata_validator.utils import load_json
 
 
