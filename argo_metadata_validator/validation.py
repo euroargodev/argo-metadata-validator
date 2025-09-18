@@ -3,16 +3,22 @@
 from pathlib import Path
 from typing import Any
 
+from jsonschema.exceptions import ValidationError as JsonValidationError
+
+from argo_metadata_validator.models.results import ValidationError
 from argo_metadata_validator.schema_utils import get_json_validator
 from argo_metadata_validator.utils import load_json
 from argo_metadata_validator.vocab_utils import expand_vocab, get_all_terms_from_argo_vocabs
 
 
+def _parse_json_error(error: JsonValidationError) -> ValidationError:
+    return ValidationError(message=error.message, path=".".join([str(x) for x in error.path]))
+
 class ArgoValidator:
     """Validator class for ARGO metadata."""
 
     all_json_data: dict[str, Any] = {}  # Keyed by the original filename
-    validation_errors: dict[str, list[str]] = {}  # Keyed by the original filename
+    validation_errors: dict[str, list[ValidationError]] = {}  # Keyed by the original filename
     valid_argo_vocab_terms: list[str] = []
 
     def __init__(self):
@@ -35,7 +41,7 @@ class ArgoValidator:
             # Load the JSON into memory
             self.all_json_data[str(file)] = load_json(file)
 
-    def validate(self, json_files: list[str]) -> dict[str, list[str]]:
+    def validate(self, json_files: list[str]) -> dict[str, list[ValidationError]]:
         """Takes a list of JSON files and validates each.
 
         Args:
@@ -54,7 +60,7 @@ class ArgoValidator:
                 self.validation_errors[file] += self.validate_vocabs(json_data)
         return self.validation_errors
 
-    def validate_json(self, json_data: Any) -> list[str]:
+    def validate_json(self, json_data: Any) -> list[ValidationError]:
         """Apply JSON schema validation to given JSON data.
 
         Args:
@@ -68,10 +74,10 @@ class ArgoValidator:
         errors = []
 
         if not json_validator.is_valid(json_data):
-            errors = [err.message for err in json_validator.iter_errors(json_data)]
+            errors = [_parse_json_error(err) for err in json_validator.iter_errors(json_data)]
         return errors
 
-    def validate_vocabs(self, json_data: Any) -> list[str]:
+    def validate_vocabs(self, json_data: Any) -> list[ValidationError]:
         """Check validity of used vocab terms in JSON data.
 
         Args:
@@ -80,7 +86,7 @@ class ArgoValidator:
         Returns:
             list[str]: List of errors.
         """
-        validation_errors: list[str] = []
+        validation_errors: list[ValidationError] = []
         if "SENSORS" in json_data:
             validation_errors += self.validate_vocab_terms(
                 json_data, "SENSORS", ["SENSOR", "SENSOR_MAKER", "SENSOR_MODEL"]
@@ -105,7 +111,7 @@ class ArgoValidator:
             )
         return validation_errors
 
-    def validate_vocab_terms(self, json_data: Any, field: str, sub_fields: list[str]) -> list[str]:
+    def validate_vocab_terms(self, json_data: Any, field: str, sub_fields: list[str]) -> list[ValidationError]:
         """Check that specific fields in the JSON match ARGO vocab terms.
 
         Args:
@@ -124,9 +130,9 @@ class ArgoValidator:
         if type(items) is not list:
             items = [items]
 
-        for item in items:
+        for idx, item in enumerate(items):
             for x in sub_fields:
                 val = expand_vocab(context, item[x])
                 if val not in self.valid_argo_vocab_terms:
-                    errors.append(f"Unknown NSV term: {val}")
+                    errors.append(ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}"))
         return errors
