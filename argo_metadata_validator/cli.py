@@ -15,6 +15,9 @@ def output_to_terminal(errors: dict[str, list[ValidationError]]):
             click.echo(click.style(f"{file} has {len(file_errors)} errors", fg="red"))
         else:
             click.echo(click.style(f"{file} has no errors", fg="green"))
+        click.echo("-----")
+        for err in file_errors:
+            click.echo(click.style(err, fg="red"))
 
 
 def output_to_json_string(errors: dict[str, list[ValidationError]]) -> str:
@@ -26,13 +29,14 @@ def output_to_json_string(errors: dict[str, list[ValidationError]]) -> str:
 
 
 @click.command()
-@click.option(
-    "--files", prompt="List of input JSON files, comma separated", help="List of input JSON files, comma separated"
-)
+@click.argument("files")
 @click.option("--quiet", "-q", "quiet_mode", is_flag=True, help="Suppresses terminal output")
-@click.option("--output-file", "-f", prompt="Filepath to output results", help="Path to output JSON file of results")
+@click.option("--output-file", "-f", help="Path to output JSON file of results")
 def main(files: str, quiet_mode: bool = False, output_file: str = ""):
-    """Main entrypoint when running as CLI."""
+    """Main entrypoint when running as CLI.
+
+    FILES is a comma-separated list of the JSON files to validate.
+    """
     file_paths = files.split(",")
     errors = ArgoValidator().validate(file_paths)
 
@@ -41,7 +45,3 @@ def main(files: str, quiet_mode: bool = False, output_file: str = ""):
     if output_file:
         with open(output_file, "w") as file:
             file.write(output_to_json_string(errors))
-
-
-if __name__ == "__main__":
-    main()

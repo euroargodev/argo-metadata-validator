@@ -15,6 +15,9 @@ description = "Validator for ARGO sensor metadata JSON"
 authors = ["Matt McCormack <matcor@noc.ac.uk>"]
 readme = "README.md"
 
+[tool.poetry.scripts]
+argo-validate = "argo_metadata_validator.cli:main"
+
 
 [tool.poetry.dependencies]
 python = "^3.11"

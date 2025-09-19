@@ -62,12 +62,12 @@ def _get_registry():
 
 def infer_schema_from_data(data: dict) -> str:
     """Determines which schema type should be applied to the provided data."""
-    if "sensor_info" in data:
-        return SENSOR_SCHEMA
-    if "platform_info" in data:
-        return PLATFORM_SCHEMA
     if "float_info" in data:
         return FLOAT_SCHEMA
+    if "platform_info" in data:
+        return PLATFORM_SCHEMA
+    if "sensor_info" in data:
+        return SENSOR_SCHEMA
     raise ValueError("Unable to determine matching schema type from data")
 
 

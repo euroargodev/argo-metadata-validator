@@ -5,16 +5,19 @@ Validator for ARGO sensor metadata JSON
 
 TODO: running/install instructions
 
-Example command to run validate files from the command line
-```
-poetry install
-poetry run python -m argo_metadata_validator --files 1.json,2.json
-```
-
 **Development**
 
 [Poetry](https://python-poetry.org/) is used to manage the building of this package (.whl & .tar.gz files), and Poetry can be used to install the package
 dependencies for you.
+
+To run the script locally:
+- `poetry install`
+- `poetry run argo-validate`
+
+For example, from the root of the repo
+```
+poetry run argo-validate tests/integration_tests/files/valid_sensor.json
+```
 
 To run lint/tests, first install dev dependencies ``poetry install -with dev``
 
