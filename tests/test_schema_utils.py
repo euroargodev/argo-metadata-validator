@@ -79,11 +79,12 @@ def test_get_registry(mocker):
         [{"platform_info": 1}, "platform"],
         [{"float_info": 1}, "float"],
         [{"sensor_info": 1, "platform_info": 2, "float_info": 3}, "sensor"],
-    ]
+    ],
 )
 def test_infer_schema_from_data(input_data, expected_output):
     """Tests infer_schema_from_data with various inputs."""
     assert infer_schema_from_data(input_data) == expected_output
+
 
 def test_infer_schema_from_data_no_match():
     """Tests infer_schema_from_data where the input doesn't match - exception is thrown."""

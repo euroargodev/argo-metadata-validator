@@ -1,4 +1,5 @@
 """Custom exceptions."""
+
 from argo_metadata_validator.schema_utils import SCHEMA_TYPES
 
 
