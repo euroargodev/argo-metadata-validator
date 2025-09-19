@@ -6,7 +6,7 @@ from typing import Any
 from jsonschema.exceptions import ValidationError as JsonValidationError
 
 from argo_metadata_validator.models.results import ValidationError
-from argo_metadata_validator.schema_utils import get_json_validator
+from argo_metadata_validator.schema_utils import get_json_validator, infer_schema_from_data
 from argo_metadata_validator.utils import load_json
 from argo_metadata_validator.vocab_utils import expand_vocab, get_all_terms_from_argo_vocabs
 
@@ -70,7 +70,8 @@ class ArgoValidator:
         Returns:
             list[str]: List of errors.
         """
-        json_validator = get_json_validator()
+        schema_type = infer_schema_from_data(json_data)
+        json_validator = get_json_validator(schema_type)
 
         errors = []
 

@@ -10,6 +10,7 @@ from argo_metadata_validator.schema_utils import (
     _get_schema_dir,
     _get_schema_file,
     _retrieve_from_filesystem,
+    infer_schema_from_data,
 )
 
 
@@ -69,3 +70,24 @@ def test_get_registry(mocker):
 
     mock_registry.assert_called_once()
     assert result == mock_registry.return_value
+
+
+@pytest.mark.parametrize(
+    "input_data,expected_output",
+    [
+        [{"sensor_info": 1}, "sensor"],
+        [{"platform_info": 1}, "platform"],
+        [{"float_info": 1}, "float"],
+        [{"sensor_info": 1, "platform_info": 2, "float_info": 3}, "sensor"],
+    ]
+)
+def test_infer_schema_from_data(input_data, expected_output):
+    """Tests infer_schema_from_data with various inputs."""
+    assert infer_schema_from_data(input_data) == expected_output
+
+def test_infer_schema_from_data_no_match():
+    """Tests infer_schema_from_data where the input doesn't match - exception is thrown."""
+    with pytest.raises(ValueError) as exc_info:
+        infer_schema_from_data({})
+
+    assert str(exc_info.value) == "Unable to determine matching schema type from data"
