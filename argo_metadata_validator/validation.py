@@ -1,5 +1,6 @@
 """Validation functionality for ARGO metadata."""
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -37,10 +38,10 @@ class ArgoValidator:
         self.all_json_data = {}
         for file in json_file_paths:
             if not file.exists():
-                raise Exception("Provided JSON file could not be found: %s", str(file))
+                raise Exception(f"Provided JSON file could not be found: {file}")
 
             # Load the JSON into memory
-            self.all_json_data[str(file)] = load_json(file)
+            self.all_json_data[file.name] = load_json(file)
 
     def validate(self, json_files: list[str]) -> dict[str, list[ValidationError]]:
         """Takes a list of JSON files and validates each.
@@ -133,8 +134,15 @@ class ArgoValidator:
             items = [items]
 
         for idx, item in enumerate(items):
-            for x in sub_fields:
-                val = expand_vocab(context, item[x])
-                if val not in self.valid_argo_vocab_terms:
-                    errors.append(ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}"))
+            for x in [field for field in sub_fields if field in item]:
+                # Sometimes dealing with lists here. Making everything a list for simplicity
+                values = item[x]
+                if not isinstance(values, list):
+                    values = [values]
+                for val in values:
+                    # Vocab terms can have optional text enclosed in square brackets
+                    val = re.sub(r"\s+\[\w+\]", "", val)
+                    val = expand_vocab(context, val)
+                    if val not in self.valid_argo_vocab_terms:
+                        errors.append(ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}"))
         return errors

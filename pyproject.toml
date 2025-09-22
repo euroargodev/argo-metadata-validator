@@ -15,6 +15,9 @@ description = "Validator for ARGO sensor metadata JSON"
 authors = ["Matt McCormack <matcor@noc.ac.uk>"]
 readme = "README.md"
 
+[tool.poetry.scripts]
+argo-validate = "argo_metadata_validator.cli:main"
+
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -66,6 +69,10 @@ lint = """
 format = """
     ruff format argo_metadata_validator tests && \
     ruff check --fix argo_metadata_validator tests
+"""
+unit-test = """
+    coverage run -m --source argo_metadata_validator --data-file=.coverage pytest tests/unit_tests/ && \
+    coverage report -m --data-file=.coverage --skip-covered
 """
 test = """
     coverage run -m --source argo_metadata_validator --data-file=.coverage pytest && \

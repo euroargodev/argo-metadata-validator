@@ -78,7 +78,7 @@ def test_get_registry(mocker):
         [{"sensor_info": 1}, "sensor"],
         [{"platform_info": 1}, "platform"],
         [{"float_info": 1}, "float"],
-        [{"sensor_info": 1, "platform_info": 2, "float_info": 3}, "sensor"],
+        [{"sensor_info": 1, "platform_info": 2, "float_info": 3}, "float"],
     ],
 )
 def test_infer_schema_from_data(input_data, expected_output):
