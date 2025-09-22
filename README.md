@@ -16,7 +16,7 @@ To run the script locally:
 
 For example, from the root of the repo
 ```
-poetry run argo-validate tests/integration_tests/files/valid_sensor.json
+poetry run argo-validate tests/files/valid_sensor.json
 ```
 
 To run lint/tests, first install dev dependencies ``poetry install -with dev``

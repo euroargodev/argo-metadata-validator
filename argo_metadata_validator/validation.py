@@ -38,7 +38,7 @@ class ArgoValidator:
         self.all_json_data = {}
         for file in json_file_paths:
             if not file.exists():
-                raise Exception("Provided JSON file could not be found: %s", str(file))
+                raise Exception(f"Provided JSON file could not be found: {file}")
 
             # Load the JSON into memory
             self.all_json_data[file.name] = load_json(file)

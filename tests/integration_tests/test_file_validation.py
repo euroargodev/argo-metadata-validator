@@ -15,6 +15,20 @@ from argo_metadata_validator.validation import ArgoValidator
         ["valid_platform.json", {"valid_platform.json": []}],
         ["valid_float.json", {"valid_float.json": []}],
         [
+            "invalid_sensor.json",
+            {
+                "invalid_sensor.json": [
+                    ValidationError(
+                        message="'SENSORS' is a required property",
+                        path="",
+                    ),
+                    ValidationError(
+                        message="Additional properties are not allowed ('SENSORZ' was unexpected)", path=""
+                    ),
+                ]
+            },
+        ],
+        [
             "platform_invalid_vocabs.json",
             {
                 "platform_invalid_vocabs.json": [
@@ -33,8 +47,16 @@ from argo_metadata_validator.validation import ArgoValidator
 )
 def test_validating_files(file_path, expected_output):
     """Test the overall validation with various files."""
-    resolved_file_path = Path(__file__).parent / "files" / file_path
+    resolved_file_path = Path(__file__).parent.parent / "files" / file_path
 
     errors = ArgoValidator().validate([str(resolved_file_path)])
 
     assert errors == expected_output
+
+
+def test_validating_non_existant_file():
+    """Test correct exception raises when a non-existing file is passed in."""
+    with pytest.raises(Exception) as exc_info:
+        ArgoValidator().validate(["not_real.com"])
+
+    assert str(exc_info.value) == "Provided JSON file could not be found: not_real.com"
