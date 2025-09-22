@@ -17,7 +17,7 @@ def output_to_terminal(errors: dict[str, list[ValidationError]]):
             click.echo(click.style(f"{file} has no errors", fg="green"))
         click.echo("-----")
         for err in file_errors:
-            click.echo(click.style(err, fg="red"))
+            click.echo(click.style(f"{err.message} at path {err.path}", fg="red"))
 
 
 def output_to_json_string(errors: dict[str, list[ValidationError]]) -> str:

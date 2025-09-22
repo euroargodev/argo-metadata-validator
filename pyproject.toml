@@ -70,6 +70,10 @@ format = """
     ruff format argo_metadata_validator tests && \
     ruff check --fix argo_metadata_validator tests
 """
+unit-test = """
+    coverage run -m --source argo_metadata_validator --data-file=.coverage pytest tests/unit_tests/ && \
+    coverage report -m --data-file=.coverage --skip-covered
+"""
 test = """
     coverage run -m --source argo_metadata_validator --data-file=.coverage pytest && \
     coverage report -m --data-file=.coverage --skip-covered
