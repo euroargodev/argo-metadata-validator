@@ -22,9 +22,18 @@ jobs:
     - name: Build package
       run: |
         python -m pip install --upgrade pip
-        pip install poetry
+        pip install poetry twine
         poetry install --no-root
         poetry build
+    - name: Check built artifacts
+      run: |
+        if [ ! -d dist ] || [ -z "$(ls -A dist)" ]; then
+          echo "❌ Build failed: dist/ is empty or missing"
+          exit 1
+        fi
+        python -m twine check dist/*
+        echo "✅ Artifacts look good"
+        ls -la dist
     - name: Upload artifacts for downstream jobs
       uses: actions/upload-artifact@v4
       with:
@@ -43,10 +52,10 @@ jobs:
           path: dist
 
       - name: Publish package to PyPI
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry config pypi-token.pypi "$PYPI_TOKEN"
-          poetry publish
+        uses: pypa/gh-action-pypi-publish@v1.10.1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
+          verbose: true
+          skip-existing: false
+          repository-url: https://upload.pypi.org/legacy/
