@@ -7,8 +7,7 @@ TODO: running/install instructions
 
 **Development**
 
-[Poetry](https://python-poetry.org/) is used to manage the building of this package (.whl & .tar.gz files), and Poetry can be used to install the package
-dependencies for you.
+[Poetry](https://python-poetry.org/) is used to manage the building of this package and managing the package dependencies.
 
 To run the script locally:
 - `poetry install`

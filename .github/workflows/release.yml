@@ -1,0 +1,26 @@
+name: Build and publish the package to PyPi
+
+on:
+  release:
+    types:
+      - created
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11"
+    - name: Build
+      run: |
+        poetry build
+    - name: Publish
+      run: |
+        poetry config pypi-token.pypi ${{ secrets.PYPI-TOKEN }}
+        poetry publish
