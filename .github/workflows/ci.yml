@@ -29,3 +29,6 @@ jobs:
     - name: Test
       run: |
         poetry run task test
+    - name: Build
+      run: |
+        poetry build
