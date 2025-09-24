@@ -23,11 +23,22 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-        poetry install --with dev
-    - name: Publish
-      env:
-        PYPI_TOKEN: ${{ secrets.PYPI-TOKEN }}
+        poetry install --no-root
+    - name: Build package
       run: |
-        poetry config pypi-token.pypi "$PYPI_TOKEN"
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install --no-root
         poetry build
-        poetry publish
+    - name: Upload artifacts for downstream jobs
+      uses: actions/upload-artifact@v4
+      with:
+        name: releases
+        path: dist
+    # - name: Publish
+    #   env:
+    #     PYPI_TOKEN: ${{ secrets.PYPI-TOKEN }}
+    #   run: |
+    #     poetry config pypi-token.pypi "$PYPI_TOKEN"
+    #     poetry build
+    #     poetry publish
