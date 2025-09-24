@@ -19,11 +19,6 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.11"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install --no-root
     - name: Build package
       run: |
         python -m pip install --upgrade pip
@@ -35,13 +30,6 @@ jobs:
       with:
         name: releases
         path: dist
-    # - name: Publish
-    #   env:
-    #     PYPI_TOKEN: ${{ secrets.PYPI-TOKEN }}
-    #   run: |
-    #     poetry config pypi-token.pypi "$PYPI_TOKEN"
-    #     poetry build
-    #     poetry publish
 
   upload-to-pypi:
     needs: build-artifacts
@@ -55,10 +43,8 @@ jobs:
           path: dist
 
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.10.1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
-          verbose: true
-          skip-existing: false
-          repository-url: https://upload.pypi.org/legacy/
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry config pypi-token.pypi "$PYPI_TOKEN"
+          poetry publish
