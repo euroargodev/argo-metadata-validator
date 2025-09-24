@@ -9,11 +9,20 @@ style = "semver"
 
 
 [tool.poetry]
-version = "0.0.0" 
+version = "0.0.0"
+
+[project]
 name = "argo-metadata-validator"
 description = "Validator for ARGO sensor metadata JSON"
-authors = ["Matt McCormack <matcor@noc.ac.uk>"]
+authors = [
+    { name = "Matt McCormack", email = "matcor@noc.ac.uk" },
+]
+keywords = ["argo", "metadata", "validation"]
 readme = "README.md"
+license = "EUPL-1.2"
+
+[project.urls]
+repository = "https://github.com/euroargodev/argo-metadata-validator"
 
 [tool.poetry.scripts]
 argo-validate = "argo_metadata_validator.cli:main"
