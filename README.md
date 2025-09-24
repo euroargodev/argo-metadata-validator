@@ -1,14 +1,26 @@
-argo-metadata-validator
-=======================
+# Argo Metadata Validator
 
 Validator for ARGO sensor metadata JSON
 
-TODO: running/install instructions
+Package: https://pypi.org/project/argo-metadata-validator
 
-**Development**
+## Usage
 
-[Poetry](https://python-poetry.org/) is used to manage the building of this package (.whl & .tar.gz files), and Poetry can be used to install the package
-dependencies for you.
+Install the package with `pip install argo-metadata-validator`.
+
+You can validate files from the command line as follows
+```
+argo-validate file_1.json,file_2.json
+```
+
+To see the available CLI options you can run `argo-validate --help`.
+
+TODO: Add Non-CLI usage example.
+
+
+## Development
+
+[Poetry](https://python-poetry.org/) is used to manage the building of this package and managing the package dependencies.
 
 To run the script locally:
 - `poetry install`
@@ -26,22 +38,6 @@ To run lint/tests, first install dev dependencies ``poetry install -with dev``
 - ``poetry run task test`` - Run unit tests
 
 
-Releasing a new version
------------------------
+### Releasing a new version
 
-Versions of the package are denoted by tags in git.
-To create a new tag, you can use the GitLab UI by following these steps:
-
-#. Go the repository tags page
-#. Click **New tag**
-#. Enter the tag name. There are four options for the format for this tag:
-
-   #. Alpha release (development release): ``vX.Y.ZaW``, for example ``v1.0.2a3``
-   #. Beta release (development release): ``vX.Y.ZbW``, for example ``v2.3.0b1``.
-   #. Release candidate (test release): ``vX.Y.ZrcW``, for example ``v1.10.9rc2``.
-   #. Full release (production release): ``vX.Y.Z``, for example ``v3.0.11``.
-
-#. Select the branch to create the tag from, this will normally be ``main``
-#. Enter a message for the tag, this is required for the CI/CD pipeline to function correctly
-#. Click **Create tag**
-#. This will trigger a CI/CD pipeline
+This done by creating a new release in Github. Make sure the created tag follows SemVer conventions.
