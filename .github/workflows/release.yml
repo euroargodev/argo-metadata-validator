@@ -28,3 +28,4 @@ jobs:
         poetry install
         poetry config pypi-token.pypi "$PYPI_TOKEN"
         poetry build
+        poetry publish
