@@ -1,6 +1,8 @@
 # Argo Metadata Validator
 
-Validator for ARGO sensor metadata JSON
+Validator for ARGO sensor metadata JSON.
+
+Schema definitions are taken from https://github.com/euroargodev/sensor_metadata_json.
 
 Package: https://pypi.org/project/argo-metadata-validator
 
