@@ -20,9 +20,13 @@ authors = [
 keywords = ["argo", "metadata", "validation"]
 readme = "README.md"
 license = "EUPL-1.2"
+dynamic = ["version"]
 
 [project.urls]
 repository = "https://github.com/euroargodev/argo-metadata-validator"
+
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 
 [tool.poetry.scripts]
 argo-validate = "argo_metadata_validator.cli:main"
