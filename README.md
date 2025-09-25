@@ -10,6 +10,8 @@ Package: https://pypi.org/project/argo-metadata-validator
 
 Install the package with `pip install argo-metadata-validator`.
 
+### CLI
+
 You can validate files from the command line as follows
 ```
 argo-validate file_1.json,file_2.json
@@ -17,7 +19,9 @@ argo-validate file_1.json,file_2.json
 
 To see the available CLI options you can run `argo-validate --help`.
 
-TODO: Add Non-CLI usage example.
+### From Python
+
+See [demos/argo_validator.ipynb](demos/argo_validator.ipynb) for an example of how to validate and parse input metadata from within Python scripts.
 
 
 ## Development
