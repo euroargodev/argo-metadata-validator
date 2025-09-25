@@ -23,7 +23,6 @@ jobs:
       env:
         PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
       run: |
-        git describe --tags --abbrev=0 
         python -m pip install --upgrade pip
         pip install poetry~=2.0.0
         poetry install
