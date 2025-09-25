@@ -11,6 +11,7 @@ from argo_metadata_validator.schema_utils import (
     _get_schema_file,
     _retrieve_from_filesystem,
     infer_schema_from_data,
+    infer_version_from_data,
 )
 
 
@@ -92,3 +93,22 @@ def test_infer_schema_from_data_no_match():
         infer_schema_from_data({})
 
     assert str(exc_info.value) == "Unable to determine matching schema type from data"
+
+
+@pytest.mark.parametrize(
+    "input_data,expected_output",
+    [
+        [{"float_info": {"format_version": "7.8.9"}}, "7.8.9"],
+        [{"platform_info": {"format_version": "7.8.9"}}, "7.8.9"],
+        [{"sensor_info": {"format_version": "7.8.9"}}, "7.8.9"],
+        [{}, DEFAULT_SCHEMA_VERSION],
+    ],
+)
+def test_infer_version_from_data(input_data, expected_output):
+    """Test infer_version_from_data with data reflecting various use cases."""
+    assert infer_version_from_data(input_data) == expected_output
+
+
+def test_infer_version_from_data_key_error():
+    """Test infer_version_from_data where a KeyError is raised - should return the default version."""
+    assert infer_version_from_data({"sensor_info": {}}) == DEFAULT_SCHEMA_VERSION

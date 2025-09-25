@@ -6,8 +6,12 @@ from typing import Any
 
 from jsonschema.exceptions import ValidationError as JsonValidationError
 
+from argo_metadata_validator.constants import FLOAT_SCHEMA, PLATFORM_SCHEMA, SENSOR_SCHEMA
+from argo_metadata_validator.models.float import Float
+from argo_metadata_validator.models.platform import Platform
 from argo_metadata_validator.models.results import ValidationError
-from argo_metadata_validator.schema_utils import get_json_validator, infer_schema_from_data
+from argo_metadata_validator.models.sensor import Sensor
+from argo_metadata_validator.schema_utils import get_json_validator, infer_schema_from_data, infer_version_from_data
 from argo_metadata_validator.utils import load_json
 from argo_metadata_validator.vocab_utils import expand_vocab, get_all_terms_from_argo_vocabs
 
@@ -56,13 +60,37 @@ class ArgoValidator:
 
         self.validation_errors = {}
         for file, json_data in self.all_json_data.items():
-            self.validation_errors[file] = self.validate_json(json_data)
+            self.validation_errors[file] = self._validate_json(json_data)
 
             if not self.validation_errors[file]:
-                self.validation_errors[file] += self.validate_vocabs(json_data)
+                self.validation_errors[file] += self._validate_vocabs(json_data)
         return self.validation_errors
 
-    def validate_json(self, json_data: Any) -> list[ValidationError]:
+    def parse(self, json_file: str) -> Sensor | Float | Platform:
+        """Parses provided metadata into Pydantic models.
+
+        Args:
+            json_file (str): Path of an input JSON file.
+
+        Returns:
+            _type_: _description_
+        """
+        errors = self.validate([json_file])
+        errors = errors[Path(json_file).name]
+        if errors:
+            raise Exception("Data not valid, run the validation function for detailed errors.")
+
+        data = self.all_json_data[Path(json_file).name]
+        schema_type = infer_schema_from_data(data)
+        if schema_type == SENSOR_SCHEMA:
+            return Sensor(**data)
+        if schema_type == FLOAT_SCHEMA:
+            return Float(**data)
+        if schema_type == PLATFORM_SCHEMA:
+            return Platform(**data)
+        raise Exception("Data does not match a defined Python model.")
+
+    def _validate_json(self, json_data: Any) -> list[ValidationError]:
         """Apply JSON schema validation to given JSON data.
 
         Args:
@@ -72,7 +100,8 @@ class ArgoValidator:
             list[str]: List of errors.
         """
         schema_type = infer_schema_from_data(json_data)
-        json_validator = get_json_validator(schema_type)
+        schema_version = infer_version_from_data(json_data)
+        json_validator = get_json_validator(schema_type, version=schema_version)
 
         errors = []
 
@@ -80,7 +109,7 @@ class ArgoValidator:
             errors = [_parse_json_error(err) for err in json_validator.iter_errors(json_data)]
         return errors
 
-    def validate_vocabs(self, json_data: Any) -> list[ValidationError]:
+    def _validate_vocabs(self, json_data: Any) -> list[ValidationError]:
         """Check validity of used vocab terms in JSON data.
 
         Args:

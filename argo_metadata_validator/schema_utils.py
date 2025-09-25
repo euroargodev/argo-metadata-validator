@@ -71,6 +71,20 @@ def infer_schema_from_data(data: dict) -> str:
     raise ValueError("Unable to determine matching schema type from data")
 
 
+def infer_version_from_data(data: dict) -> str:
+    """Gets the format version by looking into the data file."""
+    try:
+        if "float_info" in data:
+            return data["float_info"]["format_version"]
+        if "platform_info" in data:
+            return data["platform_info"]["format_version"]
+        if "sensor_info" in data:
+            return data["sensor_info"]["format_version"]
+    except KeyError:
+        return DEFAULT_SCHEMA_VERSION
+    return DEFAULT_SCHEMA_VERSION
+
+
 def get_json_validator(schema_type: str, version: str = DEFAULT_SCHEMA_VERSION) -> Validator:
     """Returns a jsonschema Validator for the given schema version.
 
