@@ -23,6 +23,7 @@ authors = [
 keywords = ["argo", "metadata", "validation"]
 readme = "README.md"
 license = "EUPL-1.2"
+dynamic = ["version]
 
 [project.urls]
 repository = "https://github.com/euroargodev/argo-metadata-validator"
