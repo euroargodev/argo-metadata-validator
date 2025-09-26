@@ -1,5 +1,7 @@
 # Argo Metadata Validator
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17207141.svg)](https://doi.org/10.5281/zenodo.17207141)
+
 Validator for ARGO sensor metadata JSON.
 
 Schema definitions are taken from https://github.com/euroargodev/sensor_metadata_json.
