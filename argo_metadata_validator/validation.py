@@ -173,5 +173,13 @@ class ArgoValidator:
                     val = re.sub(r"\s+\[\w+\]", "", val)
                     val = expand_vocab(context, val)
                     if val not in self.valid_argo_vocab_terms:
-                        errors.append(ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}"))
+                        error = ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}")
+                        if re.search(r"_\d+\/$", val):
+                            # Check if this was a duplicate term (_N added to end)
+                            unduplicate_val = re.sub(r"_\d+\/$", "/", val)
+                            if unduplicate_val not in self.valid_argo_vocab_terms:
+                                errors.append(error)
+                        else:
+                            # No _N at the end so can't be a duplicate term
+                            errors.append(error)
         return errors
