@@ -37,7 +37,7 @@ def test_get_all_terms_from_argo_vocabs(mocker):
     """Test for get_all_terms_from_argo_vocabs calling mocked version of sub-method."""
     mock_get = mocker.patch(
         "argo_metadata_validator.vocab_utils.get_all_terms_from_vocab",
-        return_value=VocabTerms(active=["1"], deprecated=[])
+        return_value=VocabTerms(active=["1"], deprecated=[]),
     )
 
     result = get_all_terms_from_argo_vocabs()

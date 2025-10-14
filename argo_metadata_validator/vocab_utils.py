@@ -20,8 +20,10 @@ ALL_ARGO_VOCABS = [
     "R28",
 ]
 
+
 class VocabTerms(BaseModel):
     """Model to hold fetched vocab terms from NVS."""
+
     active: list[str]
     deprecated: list[str]
 

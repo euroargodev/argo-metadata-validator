@@ -160,7 +160,6 @@ class ArgoValidator:
     def _is_deprecated_term(self, uri: str):
         return self._is_term_found(uri, self.argo_vocab_terms.deprecated)
 
-
     def validate_vocab_terms(self, json_data: Any, field: str, sub_fields: list[str]) -> list[ValidationError]:
         """Check that specific fields in the JSON match ARGO vocab terms.
 
