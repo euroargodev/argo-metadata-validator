@@ -13,7 +13,7 @@ from argo_metadata_validator.models.results import ValidationError
 from argo_metadata_validator.models.sensor import Sensor
 from argo_metadata_validator.schema_utils import get_json_validator, infer_schema_from_data, infer_version_from_data
 from argo_metadata_validator.utils import load_json
-from argo_metadata_validator.vocab_utils import expand_vocab, get_all_terms_from_argo_vocabs
+from argo_metadata_validator.vocab_utils import VocabTerms, expand_vocab, get_all_terms_from_argo_vocabs
 
 
 def _parse_json_error(error: JsonValidationError) -> ValidationError:
@@ -25,11 +25,11 @@ class ArgoValidator:
 
     all_json_data: dict[str, Any] = {}  # Keyed by the original filename
     validation_errors: dict[str, list[ValidationError]] = {}  # Keyed by the original filename
-    valid_argo_vocab_terms: list[str] = []
+    argo_vocab_terms: VocabTerms
 
     def __init__(self):
         """Initialise by pre-loading the ARGO vocab terms."""
-        self.valid_argo_vocab_terms = get_all_terms_from_argo_vocabs()
+        self.argo_vocab_terms = get_all_terms_from_argo_vocabs()
 
     def load_json_data(self, json_files: list[str]):
         """Take a list of JSON files and load content into memory.
@@ -143,6 +143,24 @@ class ArgoValidator:
             )
         return validation_errors
 
+    def _is_term_found(self, uri: str, term_list: list[str]):
+        if uri in term_list:
+            return True
+        if re.search(r"_\d+\/$", uri):
+            # Check if this was a duplicate term (_N added to end)
+            unduplicate_uri = re.sub(r"_\d+\/$", "/", uri)
+            return unduplicate_uri in term_list
+        else:
+            # No _N at the end so can't be a duplicate term
+            return False
+
+    def _is_active_term(self, uri: str):
+        return self._is_term_found(uri, self.argo_vocab_terms.active)
+
+    def _is_deprecated_term(self, uri: str):
+        return self._is_term_found(uri, self.argo_vocab_terms.deprecated)
+
+
     def validate_vocab_terms(self, json_data: Any, field: str, sub_fields: list[str]) -> list[ValidationError]:
         """Check that specific fields in the JSON match ARGO vocab terms.
 
@@ -172,14 +190,10 @@ class ArgoValidator:
                     # Vocab terms can have optional text enclosed in square brackets
                     val = re.sub(r"\s+\[\w+\]", "", val)
                     val = expand_vocab(context, val)
-                    if val not in self.valid_argo_vocab_terms:
-                        error = ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}")
-                        if re.search(r"_\d+\/$", val):
-                            # Check if this was a duplicate term (_N added to end)
-                            unduplicate_val = re.sub(r"_\d+\/$", "/", val)
-                            if unduplicate_val not in self.valid_argo_vocab_terms:
-                                errors.append(error)
+                    if not self._is_active_term(val):
+                        if self._is_deprecated_term(val):
+                            error = ValidationError(message=f"Deprecated NSV term: {val}", path=f"{field}.{idx}.{x}")
                         else:
-                            # No _N at the end so can't be a duplicate term
-                            errors.append(error)
+                            error = ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}")
+                        errors.append(error)
         return errors
