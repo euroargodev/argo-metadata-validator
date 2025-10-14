@@ -175,6 +175,13 @@
       "SENSOR_SERIAL_NO": "3901"
     },
     {
+      "SENSOR": "SDN:R25::OPTODE_DOXY_2",
+      "SENSOR_MAKER": "SDN:R26::AANDERAA",
+      "SENSOR_MODEL": "SDN:R27::AANDERAA_OPTODE_4330",
+      "SENSOR_MODEL_FIRMWARE": " ",
+      "SENSOR_SERIAL_NO": "3901"
+    },
+    {
       "SENSOR": "SDN:R25::CTD_PRES",
       "SENSOR_MAKER": "SDN:R26::RBR",
       "SENSOR_MODEL": "SDN:R27::RBR_PRES_A",
@@ -488,6 +495,17 @@
     {
       "PARAMETER": "SDN:R03::C1PHASE_DOXY",
       "PARAMETER_SENSOR": "SDN:R25::OPTODE_DOXY",
+      "PARAMETER_UNITS": "degree",
+      "PARAMETER_ACCURACY": " ",
+      "PARAMETER_RESOLUTION": " ",
+      "PREDEPLOYMENT_CALIB_EQUATION": "none",
+      "PREDEPLOYMENT_CALIB_COEFFICIENT_LIST": {},
+      "PREDEPLOYMENT_CALIB_COMMENT": "Phase measurement with blue excitation light; see TD269 Operating manual oxygen optode 4330, 4835, 483",
+      "PREDEPLOYMENT_CALIB_DATE": " "
+    },
+    {
+      "PARAMETER": "SDN:R03::C1PHASE_DOXY_2",
+      "PARAMETER_SENSOR": "SDN:R25::OPTODE_DOXY_2",
       "PARAMETER_UNITS": "degree",
       "PARAMETER_ACCURACY": " ",
       "PARAMETER_RESOLUTION": " ",

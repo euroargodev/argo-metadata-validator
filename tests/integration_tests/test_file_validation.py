@@ -43,6 +43,17 @@ from argo_metadata_validator.validation import ArgoValidator
                 ]
             },
         ],
+        [
+            "sensor_deprecated_vocab.json",
+            {
+                "sensor_deprecated_vocab.json": [
+                    ValidationError(
+                        message="Deprecated NSV term: http://vocab.nerc.ac.uk/collection/R03/current/NB_SAMPLE/",
+                        path="PARAMETERS.0.PARAMETER",
+                    )
+                ]
+            },
+        ],
     ],
 )
 def test_validating_files(file_path, expected_output):
