@@ -79,13 +79,10 @@ class ArgoValidator:
             _type_: _description_
         """
         errors = self.validate([json_obj])
-        if any([len(errors[e]) > 0 for e in errors.keys()]):
+        if any([len(errors[e]) > 0 for e in errors]):  # noqa C419
             raise Exception("Data not valid, run the validation function for detailed errors.")
 
-        if isinstance(json_obj, dict):
-            key = f"JSdict.{id(json_obj)}"
-        else:
-            key = Path(json_obj).name
+        key = f"JSdict.{id(json_obj)}" if isinstance(json_obj, dict) else Path(json_obj).name
         data = self.all_json_data[key]
         schema_type = infer_schema_from_data(data)
         if schema_type == SENSOR_SCHEMA:
