@@ -31,11 +31,11 @@ class ArgoValidator:
         """Initialise by pre-loading the ARGO vocab terms."""
         self.argo_vocab_terms = get_all_terms_from_argo_vocabs()
 
-    def load_json_data(self, json_obj: list[str] | list[dict]):
+    def load_json_data(self, json_obj: list[str|dict]):
         """Take a list of JSON files and load content into memory.
 
         Args:
-            json_obj (list[str] | list[dict]): List of file paths or JSON data already in memory
+            json_obj (list[str|dict]): List of file paths or JSON dictionary
         """
         self.all_json_data = {}
         for item in json_obj:
@@ -50,11 +50,11 @@ class ArgoValidator:
                     # Load the JSON file into memory
                     self.all_json_data[file.name] = load_json(Path(item))
 
-    def validate(self, json_obj: list[str] | list[dict]) -> dict[str, list[ValidationError]]:
+    def validate(self, json_obj: list[str|dict]) -> dict[str, list[ValidationError]]:
         """Takes a list of JSON files or dictionary and validates each.
 
         Args:
-            json_obj (list[str] | list[dict]): List of file paths or JSON dictionary
+            json_obj (list[str|dict]): List of file paths or JSON dictionary
 
         Returns:
             dict[str, list[str]]: Errors, keyed by the input filename.
