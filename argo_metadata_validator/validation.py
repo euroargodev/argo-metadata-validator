@@ -31,32 +31,35 @@ class ArgoValidator:
         """Initialise by pre-loading the ARGO vocab terms."""
         self.argo_vocab_terms = get_all_terms_from_argo_vocabs()
 
-    def load_json_data(self, json_files: list[str]):
+    def load_json_data(self, json_obj: list[str] | list[dict]):
         """Take a list of JSON files and load content into memory.
 
         Args:
-            json_files (list[str]): List of file paths.
+            json_obj (list[str] | list[dict]): List of file paths or JSON data already in memory
         """
-        json_file_paths = [Path(x) for x in json_files]
-
         self.all_json_data = {}
-        for file in json_file_paths:
-            if not file.exists():
-                raise Exception(f"Provided JSON file could not be found: {file}")
+        for item in json_obj:
+            if isinstance(item, dict):
+                # Load the JSON object into memory
+                self.all_json_data.update({f"JSdict.{id(item)}": item})
+            else:
+                file = Path(item)
+                if not file.exists():
+                    raise Exception(f"Provided JSON file could not be found: {file}")
+                else:
+                    # Load the JSON file into memory
+                    self.all_json_data[file.name] = load_json(Path(item))
 
-            # Load the JSON into memory
-            self.all_json_data[file.name] = load_json(file)
-
-    def validate(self, json_files: list[str]) -> dict[str, list[ValidationError]]:
-        """Takes a list of JSON files and validates each.
+    def validate(self, json_obj: list[str] | list[dict]) -> dict[str, list[ValidationError]]:
+        """Takes a list of JSON files or dictionary and validates each.
 
         Args:
-            json_files (list[str]): List of file paths.
+            json_obj (list[str] | list[dict]): List of file paths or JSON dictionary
 
         Returns:
             dict[str, list[str]]: Errors, keyed by the input filename.
         """
-        self.load_json_data(json_files)
+        self.load_json_data(json_obj)
 
         self.validation_errors = {}
         for file, json_data in self.all_json_data.items():
@@ -66,21 +69,24 @@ class ArgoValidator:
                 self.validation_errors[file] += self._validate_vocabs(json_data)
         return self.validation_errors
 
-    def parse(self, json_file: str) -> Sensor | Float | Platform:
+    def parse(self, json_obj: str | dict) -> Sensor | Float | Platform:
         """Parses provided metadata into Pydantic models.
 
         Args:
-            json_file (str): Path of an input JSON file.
+            json_obj (str | dict): Path of an input JSON file or JSON data already in memory
 
         Returns:
             _type_: _description_
         """
-        errors = self.validate([json_file])
-        errors = errors[Path(json_file).name]
-        if errors:
+        errors = self.validate([json_obj])
+        if any([len(errors[e])>0 for e in errors.keys()]):
             raise Exception("Data not valid, run the validation function for detailed errors.")
 
-        data = self.all_json_data[Path(json_file).name]
+        if isinstance(json_obj, dict):
+            key = f"JSdict.{id(json_obj)}"
+        else:
+            key = Path(json_obj).name
+        data = self.all_json_data[key]
         schema_type = infer_schema_from_data(data)
         if schema_type == SENSOR_SCHEMA:
             return Sensor(**data)
@@ -101,6 +107,7 @@ class ArgoValidator:
         """
         schema_type = infer_schema_from_data(json_data)
         schema_version = infer_version_from_data(json_data)
+        # print(f"Validating against schema version {schema_version}")
         json_validator = get_json_validator(schema_type, version=schema_version)
 
         errors = []
