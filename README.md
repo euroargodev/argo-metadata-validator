@@ -51,7 +51,7 @@ For example, from the root of the repo
 poetry run argo-validate tests/files/valid_sensor.json
 ```
 
-To run lint/tests, first install dev dependencies ``poetry install -with dev``
+To run lint/tests, first install dev dependencies ``poetry install --with dev``
 
 - ``poetry run task lint`` - Check linting
 - ``poetry run task format`` - Autofix lint errors (where possible)

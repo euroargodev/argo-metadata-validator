@@ -35,7 +35,7 @@ class ArgoValidator:
         """Take a list of JSON files and load content into memory.
 
         Args:
-            json_obj (list[str | dict]): List of file paths or JSON dictionary
+            json_obj (list[str | dict]): List of file paths or JSON dictionaries
         """
         self.all_json_data = {}
         for item in json_obj:
@@ -46,15 +46,15 @@ class ArgoValidator:
                 file = Path(item)
                 if not file.exists():
                     raise Exception(f"Provided JSON file could not be found: {file}")
-                else:
-                    # Load the JSON file into memory
-                    self.all_json_data[file.name] = load_json(Path(item))
+
+                # Load the JSON file into memory
+                self.all_json_data[file.name] = load_json(Path(item))
 
     def validate(self, json_obj: list[str | dict]) -> dict[str, list[ValidationError]]:
-        """Takes a list of JSON files or dictionary and validates each.
+        """Takes a list of JSON files or dictionaries and validates each.
 
         Args:
-            json_obj (list[str|dict]): List of file paths or JSON dictionary
+            json_obj (list[str|dict]): List of file paths or JSON dictionaries.
 
         Returns:
             dict[str, list[str]]: Errors, keyed by the input filename.
@@ -79,7 +79,7 @@ class ArgoValidator:
             _type_: _description_
         """
         errors = self.validate([json_obj])
-        if any([len(errors[e]) > 0 for e in errors]):  # noqa C419
+        if any(len(errors[e]) > 0 for e in errors):
             raise Exception("Data not valid, run the validation function for detailed errors.")
 
         key = f"JSdict.{id(json_obj)}" if isinstance(json_obj, dict) else Path(json_obj).name
@@ -104,7 +104,7 @@ class ArgoValidator:
         """
         schema_type = infer_schema_from_data(json_data)
         schema_version = infer_version_from_data(json_data)
-        # print(f"Validating against schema version {schema_version}")
+        print(f"Validating against schema version {schema_version}")
         json_validator = get_json_validator(schema_type, version=schema_version)
 
         errors = []
