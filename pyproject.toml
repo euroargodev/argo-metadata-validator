@@ -72,6 +72,7 @@ twine = "^4.0.2"
 taskipy = "^1.14.1"
 pytest-mock = "^3.15.1"
 requests-mock = "^1.12.1"
+ipykernel = "^7.1.0"
  
  
 [tool.taskipy.tasks]
