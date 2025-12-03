@@ -22,6 +22,7 @@ class SensorInstance(BaseModel):
     SENSOR_MODEL: str  # URI
     SENSOR_MODEL_FIRMWARE: str
     SENSOR_SERIAL_NO: str
+    sensor_vendorinfo: dict | None = None
 
 
 class SensorParameter(BaseModel):
@@ -36,6 +37,8 @@ class SensorParameter(BaseModel):
     PREDEPLOYMENT_CALIB_COEFFICIENT_LIST: dict[str, str]
     PREDEPLOYMENT_CALIB_COMMENT: str
     PREDEPLOYMENT_CALIB_DATE: str
+    parameter_vendorinfo: dict | None = None
+    predeployment_vendorinfo: dict | None = None
 
 
 class Sensor(BaseModel):
@@ -45,3 +48,4 @@ class Sensor(BaseModel):
     SENSORS: list[SensorInstance]
     PARAMETERS: list[SensorParameter]
     context: dict[str, str] = Field(alias="@context")
+    instrument_vendorinfo: dict | None = None
