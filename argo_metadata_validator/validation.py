@@ -13,7 +13,7 @@ from argo_metadata_validator.models.results import ValidationError
 from argo_metadata_validator.models.sensor import Sensor
 from argo_metadata_validator.schema_utils import get_json_validator, infer_schema_from_data, infer_version_from_data
 from argo_metadata_validator.utils import load_json
-from argo_metadata_validator.vocab_utils import VocabTerms, expand_vocab, get_all_terms_from_argo_vocabs
+from argo_metadata_validator.vocab_utils import VocabTerms, expand_vocab, update_terms_from_context
 
 
 def _parse_json_error(error: JsonValidationError) -> ValidationError:
@@ -29,7 +29,7 @@ class ArgoValidator:
 
     def __init__(self):
         """Initialise by pre-loading the ARGO vocab terms."""
-        self.argo_vocab_terms = get_all_terms_from_argo_vocabs()
+        self.argo_vocab_terms = VocabTerms(collections=[], active=[], deprecated=[])
 
     def load_json_data(self, json_obj: list[str | dict]):
         """Take a list of JSON files and load content into memory.
@@ -176,6 +176,7 @@ class ArgoValidator:
             list[str]: List of errors.
         """
         context = json_data["@context"]
+        update_terms_from_context(self.argo_vocab_terms, context)
 
         errors = []
 
