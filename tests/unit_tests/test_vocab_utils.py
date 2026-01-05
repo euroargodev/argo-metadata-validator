@@ -4,12 +4,11 @@ import pytest
 import requests_mock
 
 from argo_metadata_validator.vocab_utils import (
-    ALL_ARGO_VOCABS,
     NVS_HOST,
     VocabTerms,
     expand_vocab,
-    get_all_terms_from_argo_vocabs,
     get_all_terms_from_vocab,
+    update_terms_from_context,
 )
 
 
@@ -33,20 +32,42 @@ def test_expand_vocab(input_val, expected_result):
     assert result == expected_result
 
 
-def test_get_all_terms_from_argo_vocabs(mocker):
-    """Test for get_all_terms_from_argo_vocabs calling mocked version of sub-method."""
-    mock_get = mocker.patch(
+def test_update_terms_from_context(mocker):
+    """Test that update_terms_from_context correctly fetches terms for a vocab in the context."""
+    vocab_terms = VocabTerms(collections=[], active=[], deprecated=[])
+    mock_get_terms = mocker.patch(
         "argo_metadata_validator.vocab_utils.get_all_terms_from_vocab",
-        return_value=VocabTerms(active=["1"], deprecated=[]),
+        return_value=VocabTerms(collections=[], active=[""], deprecated=[""]),
     )
 
-    result = get_all_terms_from_argo_vocabs()
+    assert len(vocab_terms.active) == 0
+    assert len(vocab_terms.deprecated) == 0
 
-    # Check the per-vocab call happens the right number of times
-    assert mock_get.call_count == len(ALL_ARGO_VOCABS)
-    # Check that result is correctly a list of strings
-    assert isinstance(result.active, list)
-    assert all(isinstance(x, str) for x in result.active)
+    update_terms_from_context(
+        vocab_terms,
+        {
+            "SDN:A01::": "url",
+        },
+    )
+
+    mock_get_terms.assert_called_once_with("A01")
+    assert len(vocab_terms.active) == 1
+    assert len(vocab_terms.deprecated) == 1
+
+
+def test_update_terms_from_context_already_stored(mocker):
+    """Test that update_terms_from_context doesn't recache terms for a vocab it has already."""
+    vocab_terms = VocabTerms(collections=["A01"], active=[], deprecated=[])
+    mock_get_terms = mocker.patch("argo_metadata_validator.vocab_utils.get_all_terms_from_vocab")
+
+    update_terms_from_context(
+        vocab_terms,
+        {
+            "SDN:A01::": "url",
+        },
+    )
+
+    mock_get_terms.assert_not_called()
 
 
 def test_get_all_terms_from_vocab():

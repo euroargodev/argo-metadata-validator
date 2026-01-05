@@ -1,29 +1,17 @@
 """Utilities related to NVS/vocabularies."""
 
+import re
+
 import requests
 from pydantic import BaseModel
 
 NVS_HOST = "http://vocab.nerc.ac.uk"
 
-ALL_ARGO_VOCABS = [
-    "L22",
-    "R03",
-    "R08",
-    "R09",
-    "R10",
-    "R22",
-    "R23",
-    "R24",
-    "R25",
-    "R26",
-    "R27",
-    "R28",
-]
-
 
 class VocabTerms(BaseModel):
     """Model to hold fetched vocab terms from NVS."""
 
+    collections: list[str]
     active: list[str]
     deprecated: list[str]
 
@@ -39,18 +27,17 @@ def expand_vocab(context: dict, value: str):
     return val
 
 
-def get_all_terms_from_argo_vocabs() -> VocabTerms:
-    """Fetches all active terms from all of the ARGO vocabularies.
-
-    Returns:
-        list[str]: List of terms as URIs.
-    """
-    terms = VocabTerms(active=[], deprecated=[])
-    for vocab in ALL_ARGO_VOCABS:
-        vocab_terms = get_all_terms_from_vocab(vocab)
-        terms.active += vocab_terms.active
-        terms.deprecated += vocab_terms.deprecated
-    return terms
+def update_terms_from_context(terms: VocabTerms, context: dict):
+    """Fetches terms for all vocabs found in the context object."""
+    for k in context:
+        re_search = re.search(r"SDN:(\w+)::", k)
+        if re_search:
+            vocab_name = re_search.groups()[0]
+            if vocab_name not in terms.collections:
+                vocab_terms = get_all_terms_from_vocab(vocab_name)
+                terms.collections.append(vocab_name)
+                terms.active += vocab_terms.active
+                terms.deprecated += vocab_terms.deprecated
 
 
 def get_all_terms_from_vocab(vocab: str) -> VocabTerms:
@@ -74,7 +61,7 @@ def get_all_terms_from_vocab(vocab: str) -> VocabTerms:
         query_url, data=sparql_query, headers={"Content-Type": "application/sparql-query"}, timeout=120
     )
     resp.raise_for_status()
-    results = VocabTerms(active=[], deprecated=[])
+    results = VocabTerms(collections=[], active=[], deprecated=[])
     for x in resp.json()["results"]["bindings"]:
         if x["isDeprecated"]["value"] == "true":
             results.deprecated.append(x["uri"]["value"])
