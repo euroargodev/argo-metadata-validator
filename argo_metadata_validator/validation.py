@@ -202,8 +202,8 @@ class ArgoValidator:
                     val = expand_vocab(context, val)
                     if not self._is_active_term(val):
                         if self._is_deprecated_term(val):
-                            error = ValidationError(message=f"Deprecated NSV term: {val}", path=f"{field}.{idx}.{x}")
+                            error = ValidationError(message=f"Deprecated NVS term: {val}", path=f"{field}.{idx}.{x}")
                         else:
-                            error = ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}")
+                            error = ValidationError(message=f"Unknown NVS term: {val}", path=f"{field}.{idx}.{x}")
                         errors.append(error)
         return errors

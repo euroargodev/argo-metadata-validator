@@ -26,11 +26,11 @@ test_cases = [
         "platform_invalid_vocabs.json",
         [
             ValidationError(
-                message="Unknown NSV term: http://vocab.nerc.ac.uk/collection/R28/current/APF9/",
+                message="Unknown NVS term: http://vocab.nerc.ac.uk/collection/R28/current/APF9/",
                 path="PLATFORM.0.CONTROLLER_BOARD_TYPE_PRIMARY",
             ),
             ValidationError(
-                message="Unknown NSV term: http://vocab.nerc.ac.uk/collection/R28/current/USEA/",
+                message="Unknown NVS term: http://vocab.nerc.ac.uk/collection/R28/current/USEA/",
                 path="PLATFORM.0.CONTROLLER_BOARD_TYPE_SECONDARY",
             ),
         ],
@@ -39,7 +39,7 @@ test_cases = [
         "sensor_deprecated_vocab.json",
         [
             ValidationError(
-                message="Deprecated NSV term: http://vocab.nerc.ac.uk/collection/R03/current/NB_SAMPLE/",
+                message="Deprecated NVS term: http://vocab.nerc.ac.uk/collection/R03/current/NB_SAMPLE/",
                 path="PARAMETERS.0.PARAMETER",
             )
         ],
