@@ -11,7 +11,12 @@ from argo_metadata_validator.models.float import Float
 from argo_metadata_validator.models.platform import Platform
 from argo_metadata_validator.models.results import ValidationError
 from argo_metadata_validator.models.sensor import Sensor
-from argo_metadata_validator.schema_utils import get_json_validator, infer_schema_from_data, infer_version_from_data
+from argo_metadata_validator.schema_utils import (
+    get_json_validator,
+    get_json_validator_for_user_schema,
+    infer_schema_from_data,
+    infer_version_from_data,
+)
 from argo_metadata_validator.utils import load_json
 from argo_metadata_validator.vocab_utils import VocabTerms, expand_vocab, update_terms_from_context
 
@@ -111,7 +116,7 @@ class ArgoValidator:
             print(f"Validating against schema version {schema_version}")
             json_validator = get_json_validator(schema_type, version=schema_version)
         else:
-            pass
+            json_validator = get_json_validator_for_user_schema(schema_path)
 
         errors = []
 
