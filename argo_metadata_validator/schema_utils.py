@@ -59,7 +59,7 @@ def _retrieve_from_filesystem(uri: str, schema_dir: Path = None):
 
 def _get_registry(schema_file_path: Path = None):
     schema_dir = None if schema_file_path is None else schema_file_path.parent
-    return Registry(retrieve=functools.partial(_retrieve_from_filesystem, schema_dir = schema_dir))
+    return Registry(retrieve=functools.partial(_retrieve_from_filesystem, schema_dir=schema_dir))
 
 
 def infer_schema_from_data(data: dict) -> str:
