@@ -11,7 +11,12 @@ from argo_metadata_validator.models.float import Float
 from argo_metadata_validator.models.platform import Platform
 from argo_metadata_validator.models.results import ValidationError
 from argo_metadata_validator.models.sensor import Sensor
-from argo_metadata_validator.schema_utils import get_json_validator, infer_schema_from_data, infer_version_from_data
+from argo_metadata_validator.schema_utils import (
+    get_json_validator,
+    get_json_validator_for_user_schema,
+    infer_schema_from_data,
+    infer_version_from_data,
+)
 from argo_metadata_validator.utils import load_json
 from argo_metadata_validator.vocab_utils import VocabTerms, expand_vocab, update_terms_from_context
 
@@ -50,11 +55,13 @@ class ArgoValidator:
                 # Load the JSON file into memory
                 self.all_json_data[file.name] = load_json(Path(item))
 
-    def validate(self, json_obj: list[str | dict]) -> dict[str, list[ValidationError]]:
+    def validate(self, json_obj: list[str | dict], schema_path: Path = None) -> dict[str, list[ValidationError]]:
         """Takes a list of JSON files or dictionaries and validates each.
 
         Args:
             json_obj (list[str|dict]): List of file paths or JSON dictionaries.
+            schema_path (Path, optional): A path to a schema file. Defaults to None. If not provided,
+                the schema will be inferred from field in the json_obj.
 
         Returns:
             dict[str, list[str]]: Errors, keyed by the input filename.
@@ -63,7 +70,7 @@ class ArgoValidator:
 
         self.validation_errors = {}
         for file, json_data in self.all_json_data.items():
-            self.validation_errors[file] = self._validate_json(json_data)
+            self.validation_errors[file] = self._validate_json(json_data, schema_path)
 
             if not self.validation_errors[file]:
                 self.validation_errors[file] += self._validate_vocabs(json_data)
@@ -93,19 +100,23 @@ class ArgoValidator:
             return Platform(**data)
         raise Exception("Data does not match a defined Python model.")
 
-    def _validate_json(self, json_data: Any) -> list[ValidationError]:
+    def _validate_json(self, json_data: Any, schema_path: Path = None) -> list[ValidationError]:
         """Apply JSON schema validation to given JSON data.
 
         Args:
             json_data (Any): JSON content to check.
+            schema_path (Path, optional): A path to a schema file. Defaults to None.
 
         Returns:
             list[str]: List of errors.
         """
-        schema_type = infer_schema_from_data(json_data)
-        schema_version = infer_version_from_data(json_data)
-        print(f"Validating against schema version {schema_version}")
-        json_validator = get_json_validator(schema_type, version=schema_version)
+        if schema_path is None:
+            schema_type = infer_schema_from_data(json_data)
+            schema_version = infer_version_from_data(json_data)
+            print(f"Validating against schema version {schema_version}")
+            json_validator = get_json_validator(schema_type, version=schema_version)
+        else:
+            json_validator = get_json_validator_for_user_schema(schema_path)
 
         errors = []
 
@@ -196,8 +207,8 @@ class ArgoValidator:
                     val = expand_vocab(context, val)
                     if not self._is_active_term(val):
                         if self._is_deprecated_term(val):
-                            error = ValidationError(message=f"Deprecated NSV term: {val}", path=f"{field}.{idx}.{x}")
+                            error = ValidationError(message=f"Deprecated NVS term: {val}", path=f"{field}.{idx}.{x}")
                         else:
-                            error = ValidationError(message=f"Unknown NSV term: {val}", path=f"{field}.{idx}.{x}")
+                            error = ValidationError(message=f"Unknown NVS term: {val}", path=f"{field}.{idx}.{x}")
                         errors.append(error)
         return errors

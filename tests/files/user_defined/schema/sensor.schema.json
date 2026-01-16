@@ -1,0 +1,194 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "./sensor.schema.json",
+    "title": "JSON Schema for sensors",
+    "description": "A JSON Schema used to attribute calibration information to parameter and sensor metadata elements. This is a copy of the Argo metadata format Version 3.41.1",
+    "format_version": { "const": "0.4.0" },
+    "type": "object",
+    "properties": {
+        "sensor_info": {
+            "type": "object",
+            "properties": {
+                "created_by": {
+                    "type": "string"
+                },
+                "date_creation": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "link": {
+                    "const" : "./sensor.schema.json"
+                },
+                "format_version": {
+                    "$ref": "#/format_version"
+                },
+                "contents": {
+                    "type": "string"
+                },
+                "sensor_described": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "created_by",
+                "date_creation",
+                "link",
+                "format_version",
+                "contents",
+                "sensor_described"
+            ]
+        },
+        "@context": {
+            "type": "object",
+            "properties": {
+                "SDN:P01::": { "const": "http://vocab.nerc.ac.uk/collection/P01/current/" },
+                "SDN:L05::": { "const": "http://vocab.nerc.ac.uk/collection/L05/current/" },
+                "SDN:L35::": { "const": "http://vocab.nerc.ac.uk/collection/L35/current/" },
+                "SDN:L22::": { "const": "http://vocab.nerc.ac.uk/collection/L22/current/" }
+            },
+            "required": [
+                "SDN:P01::",
+                "SDN:L05::",
+                "SDN:L35::",
+                "SDN:L22::"
+            ],
+            "additionalProperties": false
+        },
+        "SENSORS": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "SENSOR": {
+                        "type" : "string",
+                        "format" : "uri",
+                        "pattern" : "^SDN:L05::",
+                        "description": "SENSOR string must be valid in current NVS reference table L05",
+                        "validation-uri" : "https://vocab.nerc.ac.uk/collection/L05/current/"
+                    },
+                    "SENSOR_MAKER": {
+                        "type" : "string",
+                        "format" : "uri",
+                        "pattern" : "^SDN:L35::",
+                        "description": "SENSOR_MAKER string must be valid in current NVS reference table L35",
+                        "validation-uri": "https://vocab.nerc.ac.uk/collection/L35/current/"
+                    },
+                    "SENSOR_MODEL": {
+                        "type" : "string",
+                        "format" : "uri",
+                        "pattern" : "^SDN:L22::",
+                        "description": "SENSOR_MODEL string must be valid in current NVS reference table L22",
+                        "validation-uri": "https://vocab.nerc.ac.uk/collection/L22/current/"
+                    },
+                    "SENSOR_MODEL_FIRMWARE": {
+                        "type": "string",
+                        "description": "Firmware version of this sensor_model, defined by the sensor_maker"
+                    },
+                    "SENSOR_SERIAL_NO": {
+                        "type": "string",
+                        "description": "Serial number of the sensor"
+                    },
+                    "sensor_vendorinfo": {
+                        "$ref" : "./vendors.schema.json#/$defs/sensor_vendorinfo"                        
+                    }
+                },
+                "required": [
+                    "SENSOR",
+                    "SENSOR_MAKER",
+                    "SENSOR_MODEL",
+                    "SENSOR_SERIAL_NO",
+                    "SENSOR_MODEL_FIRMWARE"
+                ],
+                "additionalProperties": false
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "PARAMETERS": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "PARAMETER": {
+                        "type" : "string",
+                        "format" : "uri",
+                        "pattern" : "^SDN:P01::",
+                        "description": "PARAMETER string must be valid in current NVS reference table P01",
+                        "validation_uri": "http://vocab.nerc.ac.uk/collection/P01/current/"
+                    },
+                    "PARAMETER_SENSOR": {
+                        "type" : "string",
+                        "format" : "uri",
+                        "pattern" : "^SDN:L05::",
+                        "description": "PARAMETER_SENSOR string must be valid in current NVS reference table L05 and must be listed as a SENSOR in the SENSORS section above",
+                        "validation_uri": "http://vocab.nerc.ac.uk/collection/L05/current/"
+                    },
+                    "PARAMETER_UNITS": {
+                        "type": "string"
+                    },
+                    "PARAMETER_ACCURACY": {
+                        "type": "string"
+                    },
+                    "PARAMETER_RESOLUTION": {
+                        "type": "string"
+                    },
+                    "PREDEPLOYMENT_CALIB_EQUATION": {
+                        "type": "string",
+                        "description" : "Calibration equation for this parameter."
+                    },
+                    "PREDEPLOYMENT_CALIB_COEFFICIENT_LIST": {
+                        "type": "object",
+                        "description" : "Calibation coefficients are listed individually here, string-encoded to guarantee precision.  They are compiled to create the PREDEPLOYMENT_CALIB_COEFFCIENT string"
+                    },
+                    "PREDEPLOYMENT_CALIB_COMMENT": {
+                        "type": "string"
+                    },
+                    "PREDEPLOYMENT_CALIB_DATE": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "string",
+                                "const": " "
+                            }
+                        ]
+                    },
+                    "parameter_vendorinfo": {
+                        "$ref" : "./vendors.schema.json#/$defs/parameter_vendorinfo"
+                    },
+                    "predeployment_vendorinfo": {
+                        "$ref" : "./vendors.schema.json#/$defs/predeployment_vendorinfo"
+                    }
+                },
+                "required": [
+                    "PARAMETER",
+                    "PARAMETER_SENSOR",
+                    "PARAMETER_UNITS",
+                    "PARAMETER_ACCURACY",
+                    "PARAMETER_RESOLUTION",
+                    "PREDEPLOYMENT_CALIB_EQUATION",
+                    "PREDEPLOYMENT_CALIB_COEFFICIENT_LIST",
+                    "PREDEPLOYMENT_CALIB_COMMENT",
+                    "PREDEPLOYMENT_CALIB_DATE"
+                ],
+                "additionalProperties": false
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "instrument_vendorinfo": {
+            "$ref" : "./vendors.schema.json#/$defs/instrument_vendorinfo"
+        }
+    },
+    "required": [
+        "@context",
+        "sensor_info",
+        "SENSORS",
+        "PARAMETERS"
+    ],
+    "uniqueItems": true,
+    "additionalProperties": false
+
+}

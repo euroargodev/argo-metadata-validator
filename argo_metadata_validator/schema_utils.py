@@ -1,5 +1,6 @@
 """Utilities related to the schema validation."""
 
+import functools
 from pathlib import Path
 
 import jsonschema.validators
@@ -49,15 +50,16 @@ def _get_schema_file(schema_type: str, version: str = DEFAULT_SCHEMA_VERSION) ->
     return schema_dir / f"argo.{schema_type}.schema.json"
 
 
-def _retrieve_from_filesystem(uri: str):
-    schema_dir = _get_schema_dir()
+def _retrieve_from_filesystem(uri: str, schema_dir: Path = None):
+    schema_dir = _get_schema_dir() if schema_dir is None else schema_dir
     file = Path(uri).name
     path = schema_dir / file
     return Resource.from_contents(load_json(path))
 
 
-def _get_registry():
-    return Registry(retrieve=_retrieve_from_filesystem)
+def _get_registry(schema_file_path: Path = None):
+    schema_dir = None if schema_file_path is None else schema_file_path.parent
+    return Registry(retrieve=functools.partial(_retrieve_from_filesystem, schema_dir=schema_dir))
 
 
 def infer_schema_from_data(data: dict) -> str:
@@ -98,6 +100,23 @@ def get_json_validator(schema_type: str, version: str = DEFAULT_SCHEMA_VERSION) 
     schema_file = _get_schema_file(schema_type, version)
     schema = load_json(schema_file)
     registry = _get_registry()
+
+    validator_cls = jsonschema.validators.validator_for(schema)
+    validator: Validator = validator_cls(schema, registry=registry)
+    return validator
+
+
+def get_json_validator_for_user_schema(schema_file_path: Path) -> Validator:
+    """Returns a jsonschema Validator for a user-supplied schema file.
+
+    Args:
+        schema_file_path (Path): The path to the schema file.
+
+    Returns:
+        Validator: validator with the appropriate schema loaded in.
+    """
+    schema = load_json(schema_file_path)
+    registry = _get_registry(schema_file_path)
 
     validator_cls = jsonschema.validators.validator_for(schema)
     validator: Validator = validator_cls(schema, registry=registry)
