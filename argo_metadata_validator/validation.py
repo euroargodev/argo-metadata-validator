@@ -9,7 +9,7 @@ from jsonschema.exceptions import ValidationError as JsonValidationError
 from argo_metadata_validator.constants import FLOAT_SCHEMA, PLATFORM_SCHEMA, SENSOR_SCHEMA
 from argo_metadata_validator.models.float import Float
 from argo_metadata_validator.models.platform import Platform
-from argo_metadata_validator.models.results import ValidationError
+from argo_metadata_validator.models.results import ERROR, WARNING, ValidationError
 from argo_metadata_validator.models.sensor import Sensor
 from argo_metadata_validator.schema_utils import (
     get_json_validator,
@@ -22,7 +22,10 @@ from argo_metadata_validator.vocab_utils import VocabTerms, expand_vocab, update
 
 
 def _parse_json_error(error: JsonValidationError) -> ValidationError:
-    return ValidationError(message=error.message, path=".".join([str(x) for x in error.path]))
+    error_path = ".".join([str(x) for x in error.path])
+    return ValidationError(
+        message=error.message, path=error_path, level=WARNING if "vendorinfo" in error_path else ERROR
+    )
 
 
 class ArgoValidator:
@@ -30,6 +33,7 @@ class ArgoValidator:
 
     all_json_data: dict[str, Any] = {}  # Keyed by the original filename
     validation_errors: dict[str, list[ValidationError]] = {}  # Keyed by the original filename
+    validation_warnings: dict[str, list[ValidationError]] = {}  # Keyed by the original filename
     argo_vocab_terms: VocabTerms
 
     def __init__(self):
@@ -86,7 +90,7 @@ class ArgoValidator:
             _type_: _description_
         """
         errors = self.validate([json_obj])
-        if any(len(errors[e]) > 0 for e in errors):
+        if any([x for x in errors[e] if x.level != WARNING] for e in errors):
             raise Exception("Data not valid, run the validation function for detailed errors.")
 
         key = f"JSdict.{id(json_obj)}" if isinstance(json_obj, dict) else Path(json_obj).name
@@ -108,7 +112,7 @@ class ArgoValidator:
             schema_path (Path, optional): A path to a schema file. Defaults to None.
 
         Returns:
-            list[str]: List of errors.
+            list[ValidationError]: List of errors.
         """
         if schema_path is None:
             schema_type = infer_schema_from_data(json_data)

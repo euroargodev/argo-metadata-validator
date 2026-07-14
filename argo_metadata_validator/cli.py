@@ -4,20 +4,25 @@ import json
 
 import click
 
-from argo_metadata_validator.models.results import ValidationError
+from argo_metadata_validator.models.results import ERROR, WARNING, ValidationError
 from argo_metadata_validator.validation import ArgoValidator
 
 
 def output_to_terminal(errors: dict[str, list[ValidationError]]):
     """Convert validation errors to terminal output."""
     for file, file_errors in errors.items():
+        error_count = len([x for x in file_errors if x.level == ERROR])
+        warning_count = len([x for x in file_errors if x.level == WARNING])
         if file_errors:
-            click.echo(click.style(f"{file} has {len(file_errors)} errors", fg="red"))
+            if error_count:
+                click.echo(click.style(f"{file} has {error_count} errors", fg="red"))
+            if warning_count:
+                click.echo(click.style(f"{file} has {warning_count} warnings", fg="yellow"))
         else:
             click.echo(click.style(f"{file} has no errors", fg="green"))
         click.echo("-----")
         for err in file_errors:
-            click.echo(click.style(f"{err.message} at path {err.path}", fg="red"))
+            click.echo(click.style(f"{err.message} at path {err.path}", fg="yellow" if err.level == WARNING else "red"))
 
 
 def output_to_json_string(errors: dict[str, list[ValidationError]]) -> str:
