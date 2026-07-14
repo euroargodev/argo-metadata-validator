@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from argo_metadata_validator.models.results import ValidationError
+from argo_metadata_validator.models.results import ERROR, ValidationError
 from argo_metadata_validator.validation import ArgoValidator
 
 test_cases = [
@@ -15,8 +15,13 @@ test_cases = [
             ValidationError(
                 message="'SENSORS' is a required property",
                 path="",
+                level=ERROR,
             ),
-            ValidationError(message="Additional properties are not allowed ('SENSORZ' was unexpected)", path=""),
+            ValidationError(
+                message="Additional properties are not allowed ('SENSORZ' was unexpected)",
+                path="",
+                level=ERROR,
+            ),
         ],
     ],
 ]

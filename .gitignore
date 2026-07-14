@@ -31,3 +31,5 @@ venv/
 .pytest_cache/
 
 test_json/
+
+.DS_store

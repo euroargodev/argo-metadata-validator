@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from argo_metadata_validator.models.results import ValidationError
+from argo_metadata_validator.models.results import ERROR, ValidationError
 from argo_metadata_validator.validation import ArgoValidator
 
 test_cases = [
@@ -18,8 +18,13 @@ test_cases = [
             ValidationError(
                 message="'SENSORS' is a required property",
                 path="",
+                level=ERROR,
             ),
-            ValidationError(message="Additional properties are not allowed ('SENSORZ' was unexpected)", path=""),
+            ValidationError(
+                message="Additional properties are not allowed ('SENSORZ' was unexpected)",
+                path="",
+                level=ERROR,
+            ),
         ],
     ],
     [
@@ -28,10 +33,12 @@ test_cases = [
             ValidationError(
                 message="Unknown NVS term: http://vocab.nerc.ac.uk/collection/R28/current/APF9/",
                 path="PLATFORM.0.CONTROLLER_BOARD_TYPE_PRIMARY",
+                level=ERROR,
             ),
             ValidationError(
                 message="Unknown NVS term: http://vocab.nerc.ac.uk/collection/R28/current/USEA/",
                 path="PLATFORM.0.CONTROLLER_BOARD_TYPE_SECONDARY",
+                level=ERROR,
             ),
         ],
     ],
@@ -41,6 +48,7 @@ test_cases = [
             ValidationError(
                 message="Deprecated NVS term: http://vocab.nerc.ac.uk/collection/R03/current/NB_SAMPLE/",
                 path="PARAMETERS.0.PARAMETER",
+                level=ERROR,
             )
         ],
     ],

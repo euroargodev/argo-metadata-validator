@@ -2,13 +2,14 @@
 
 import pytest
 
+from argo_metadata_validator.models.results import ValidationError
 from argo_metadata_validator.validation import ArgoValidator
 
 
 def test_model_parsing_invalid_data(mocker):
     """Test the validator's parse method mocking the case where the data is invalid."""
     validator = ArgoValidator()
-    mocker.patch.object(validator, "validate", return_value={"123.json": ["hi"]})
+    mocker.patch.object(validator, "validate", return_value={"123.json": [ValidationError(message="hi")]})
 
     with pytest.raises(Exception) as exc_info:
         validator.parse("123.json")
