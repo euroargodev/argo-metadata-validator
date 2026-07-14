@@ -11,4 +11,4 @@ class ValidationError(BaseModel):
 
     message: str
     path: str | None = None
-    level: int
+    level: int = ERROR

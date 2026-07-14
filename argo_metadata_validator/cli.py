@@ -29,7 +29,11 @@ def output_to_json_string(errors: dict[str, list[ValidationError]]) -> str:
     """Convert validation errors to a JSON-string output."""
     serialised = {}
     for file, file_errors in errors.items():
-        serialised[file] = {"is_valid": len(file_errors) == 0, "errors": [x.model_dump() for x in file_errors]}
+        serialised[file] = {
+            "is_valid": len(file_errors) == 0,
+            "errors": [x.model_dump(exclude="level") for x in filter(lambda y: y.level == ERROR, file_errors)],
+            "warnings": [x.model_dump(exclude="level") for x in filter(lambda y: y.level == WARNING, file_errors)],
+        }
     return json.dumps(serialised, indent=2)
 
 
